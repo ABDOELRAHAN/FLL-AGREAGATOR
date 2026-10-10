@@ -330,7 +330,8 @@ CSS = """
 html, body, .stApp, [class*="st-"], button, input, textarea {font-family:'Cairo','Segoe UI',sans-serif;}
 .stApp {background:#f3f5fb;}
 #MainMenu, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {display:none !important;}
-header[data-testid="stHeader"] {background:transparent;}
+header[data-testid="stHeader"] {background:transparent; pointer-events:none;}
+header[data-testid="stHeader"] button, header[data-testid="stHeader"] a, [data-testid="stExpandSidebarButton"], [data-testid="stSidebarCollapseButton"] {pointer-events:auto;}
 .block-container {max-width:1320px; padding:1.2rem 2.2rem 4rem;}
 
 /* sidebar */
@@ -353,7 +354,8 @@ header[data-testid="stHeader"] {background:transparent;}
   background:linear-gradient(115deg,#0a1226 0%,#14213f 45%,var(--c) 160%); box-shadow:0 18px 50px rgba(10,18,38,.25);
   display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; position:relative; overflow:hidden;}
 .hero:after {content:""; position:absolute; width:340px; height:340px; border-radius:50%; left:-90px; top:-140px; background:rgba(255,255,255,.06);}
-.hero h1 {margin:0; font-size:32px; font-weight:800; line-height:1.3;}
+.hero h1 {margin:0; font-size:32px; font-weight:800; line-height:1.3; padding:0;}
+.hero h1 a, [data-testid="stHeaderActionElements"] {display:none !important;}
 .hero .sub {opacity:.8; margin-top:4px; font-size:14px;}
 .hero .pills {display:flex; gap:8px; flex-wrap:wrap; position:relative; z-index:1;}
 .pill {background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:7px 15px; font-size:13px; font-weight:700;}
@@ -406,7 +408,7 @@ header[data-testid="stHeader"] {background:transparent;}
 .lb-val {font-weight:800; font-size:18px; color:#0f172a;}
 
 /* overview platform cards */
-.pgrid {display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; direction:rtl;}
+.pgrid {display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:16px; direction:rtl;}
 .pcard {background:#fff; border-radius:24px; padding:22px; border:1px solid #eceff7; box-shadow:0 10px 32px rgba(15,23,42,.07);
   border-top:6px solid var(--c); text-align:right;}
 .pc-head {display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
@@ -420,6 +422,56 @@ header[data-testid="stHeader"] {background:transparent;}
 .up-head {font-size:18px; font-weight:800; padding:12px 16px; border-radius:16px; background:#fff; border:1px solid #eceff7;
   border-right:6px solid var(--c); margin-bottom:8px; direction:rtl; text-align:right;}
 [data-testid="stDataFrame"] {border-radius:16px; overflow:hidden; box-shadow:0 8px 28px rgba(15,23,42,.06);}
+
+/* mobile top nav (hidden on desktop) */
+.st-key-mobilenav {display:none;}
+.svg-wrap {overflow-x:auto; -webkit-overflow-scrolling:touch;}
+.cols {-webkit-overflow-scrolling:touch;}
+
+@media (max-width: 768px) {
+  .block-container {padding:3.2rem .75rem 3.5rem !important;}
+  .st-key-mobilenav {display:block; padding:0 0 8px;}
+  .st-key-mobilenav [data-baseweb="select"] > div {min-height:48px; border-radius:14px; font-weight:800; font-size:16px;
+      background:#0f1a35; color:#fff; border:none;}
+  .st-key-mobilenav [data-baseweb="select"] * {color:#fff !important;}
+  .st-key-mobilenav svg {fill:#f3d27a !important;}
+
+  .hero {padding:18px 18px; border-radius:20px; margin-bottom:12px;}
+  .hero:after {display:none;}
+  .hero h1 {font-size:22px;}
+  .hero .sub {font-size:12px;}
+  .pill {font-size:11px; padding:5px 11px;}
+
+  .kpi-grid {grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px; margin-bottom:12px;}
+  .kpi-grid .kpi:last-child:nth-child(odd) {grid-column:1 / -1;}
+  .kpi {padding:13px 14px; border-radius:16px;}
+  .kpi .k-icon {font-size:18px; left:10px; top:10px;}
+  .kpi .k-label {font-size:11px;}
+  .kpi .k-value {font-size:27px;}
+  .kpi .k-sub {font-size:10px;}
+
+  .panel {padding:14px; border-radius:18px; margin-bottom:12px;}
+  .panel h3 {font-size:14px; margin-bottom:10px;}
+  .sec {font-size:17px; margin:18px 0 10px;}
+
+  .cols {gap:4px; padding-bottom:4px;}
+  .col {min-width:26px; flex:1 0 26px;}
+  .col .bar {height:130px;}
+  .svg-wrap svg {min-width:520px;}
+
+  .donut {width:140px; height:140px;} .donut-in {width:100px; height:100px;} .donut-in .d-val {font-size:24px;}
+  .lb-val {font-size:16px;} .lb-name {font-size:13px;}
+
+  .pgrid {gap:12px;}
+  .pcard {padding:16px; border-radius:20px;}
+  .pc-head b {font-size:16px;} .pc-stats b {font-size:20px;}
+
+  .stButton>button, .stDownloadButton>button {min-height:46px;}
+  [data-testid="stSidebar"] .stButton>button {min-height:50px;}
+}
+@media (max-width: 380px) {
+  .kpi .k-value {font-size:23px;} .hero h1 {font-size:19px;}
+}
 </style>
 """
 
@@ -518,7 +570,7 @@ def avg_chart(daily, target, color):
            f'{dots}<line x1="{PL}" x2="{W - PR}" y1="{ty:.1f}" y2="{ty:.1f}" stroke="#16a34a" stroke-width="2" stroke-dasharray="6 5"/>'
            f'<text x="{W - PR}" y="{ty - 6:.1f}" font-size="11" font-weight="700" fill="#16a34a" text-anchor="end">التارجت {target}</text>'
            f'{xl}</svg>')
-    st.markdown(f'<div class="panel"><h3>📈 متوسط الطلبات للمندوب (يوم بيوم)</h3>{svg}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="panel"><h3>📈 متوسط الطلبات للمندوب (يوم بيوم)</h3><div class="svg-wrap">{svg}</div></div>', unsafe_allow_html=True)
 
 
 def leaderboard(title, icon, df, target, color):
@@ -768,9 +820,19 @@ def sidebar():
             st.rerun()
 
 
+def mobile_nav():
+    """قايمة تنقل ظاهرة فوق في الموبايل بس (CSS بيخبّيها في الشاشات الكبيرة)."""
+    keys = [k for k, _, _ in NAV]
+    labels = {k: f"{i}  {l}" for k, i, l in NAV}
+    with st.container(key="mobilenav"):
+        st.session_state["mnav"] = st.session_state["page"]
+        st.selectbox("القائمة", keys, format_func=labels.get, key="mnav", label_visibility="collapsed",
+                     on_change=lambda: st.session_state.update(page=st.session_state["mnav"]))
+
+
 def main():
     st.set_page_config(page_title="Courier Ops", page_icon="📊", layout="wide",
-                       initial_sidebar_state="expanded")
+                       initial_sidebar_state="auto")
     st.markdown(CSS, unsafe_allow_html=True)
     init_db()
     if not login():
@@ -778,6 +840,7 @@ def main():
 
     st.session_state.setdefault("page", "overview")
     sidebar()
+    mobile_nav()
 
     flash = st.session_state.pop("flash", None)
     if flash:
